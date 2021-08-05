@@ -1,0 +1,74 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "create build",
+            "type": "shell",
+            "command": "if (-not (Test-Path -LiteralPath \"./build\")) { mkdir build }", 
+            "options": {
+                "cwd": "${workspaceRoot}"
+            }
+        },
+        {
+            "label": "make",
+            "type": "shell",
+            "command": "make -j4",
+            "options": {
+                "cwd": "${workspaceRoot}"
+            }
+        },
+        // compile cmake
+        {
+            "label": "cmake",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-G",
+                "'MinGW Makefiles'",
+                "${workspaceRoot}"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/build"
+            }
+        },
+        {
+            "label": "make CMake",
+            "type": "shell",
+            "command": "make",
+            "options": {
+                "cwd": "${workspaceRoot}/build"
+            },
+            "dependsOn":["cmake"],
+            "dependsOrder": "sequence"
+        },
+        // clean the build 
+        {
+            "label": "clean",
+            "type": "shell",
+            "command": "del *.mod, *.o, *.exe",
+            "options": {
+                "cwd": "${workspaceRoot}/build"
+            }
+        },
+        // clean cmake outputs
+        {
+            "label": "Remove directory",
+            "type": "shell",
+            "command":"if (Test-Path -LiteralPath \"./CMakeFiles\"){rm -r CMakeFiles}",
+            "options": {
+                "cwd": "${workspaceRoot}/build"
+            }
+        },
+        {
+            "label": "clean cmake",
+            "type": "shell",
+            "command": "del *.mod, *.o, *.exe, *.cmake, *.txt, Makefile",
+            "options": {
+                "cwd": "${workspaceRoot}/build"
+            },
+            "dependsOn":["Remove directory"],
+            "dependsOrder": "sequence"
+        }
+        
+    ]
+}
